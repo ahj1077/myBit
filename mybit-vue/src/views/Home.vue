@@ -40,13 +40,6 @@
                         <td>+13.33%</td>
                         <td>1,774,177백만</td>
                     </tr>
-
-                    <!--<tr class="coin_list_content">
-                        <td>비트코인</td>
-                        <td>57,400,000</td>
-                        <td>+13.33%</td>
-                        <td>1,774,177백만</td>
-                    </tr>-->
                 </table>
             </div>
         </div>
@@ -73,7 +66,7 @@
          display:flex;
          align-items: center;
          position:relative;
-         height: 8%;
+         height: 6%;
          border-bottom: 1px solid #333333;
     }
 

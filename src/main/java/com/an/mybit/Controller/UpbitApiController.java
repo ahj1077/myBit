@@ -2,6 +2,7 @@ package com.an.mybit.Controller;
 
 import java.util.List;
 
+import com.an.mybit.Dto.CurrentCoinInfoDTO;
 import com.an.mybit.Dto.MarketCodeDTO;
 import com.an.mybit.Service.UpbitApiService;
 
@@ -25,6 +26,14 @@ public class UpbitApiController {
 
 
         return upbitApiService.retrieveMarketCode(isDetails);
+    }
+
+    @CrossOrigin
+    @GetMapping("/currentCoinInfo")
+    public List<CurrentCoinInfoDTO> retrieveCurrentCoinInfo(String marketCode){
+
+
+        return upbitApiService.retrieveCurrentCoinInfo(marketCode);
     }
     
 }

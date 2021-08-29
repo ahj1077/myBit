@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.an.mybit.Dto.CurrentCoinInfoDTO;
 import com.an.mybit.Dto.MarketCodeDTO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -77,4 +78,40 @@ public class UpbitApiService {
         return ret;
     }
 
+    /**
+     *  마켓코드로 현재 코인 정보 조회
+     * 
+     * @return
+     * @throws 
+     */
+    public List<CurrentCoinInfoDTO> retrieveCurrentCoinInfo(String marketCode){
+
+        String baseUrl = "https://api.upbit.com/v1/ticker?markets=" + marketCode;
+        BufferedReader br = null;
+        String jsonData = null;
+
+        List<CurrentCoinInfoDTO> CurrentCoinInfoDTOList = null;
+
+        Gson gson = new GsonBuilder().create();
+
+        URL url;
+        try {
+            url = new URL(baseUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            while((jsonData = br.readLine()) != null){
+                CurrentCoinInfoDTOList = gson.fromJson(jsonData, new TypeToken<List<CurrentCoinInfoDTO>>(){}.getType());
+            }     
+
+        } catch (Exception e) {            
+            e.printStackTrace();
+        }
+
+        return CurrentCoinInfoDTOList;
+    }
 }
