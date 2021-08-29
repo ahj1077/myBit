@@ -2,14 +2,14 @@
     <div id="main">
         <div id="left">
             <div id="coin_name">
-                <div id="coin_divs">비트코인</div>
+                <div id="coin_divs">{{selectedCoinData.korean_name}}</div>
                 <div id="coin_name_tab"> 
                     <div><a href='#'>시세</a></div>
                     <div><a href='#'>정보</a></div>
                 </div>         
             </div>
             <div id="coin_price">
-                <div id="price_now"><h2>57,540,000</h2> KRW</div>
+                <div id="price_now"><h2 style="font-weight : bold;">{{selectedCoinData.currentPrice}}</h2> KRW</div>
             </div>
             <div id="chart">
                 <apexcharts type="candlestick" :options="chartOptions" :series="series"></apexcharts>
@@ -17,7 +17,7 @@
         </div>
         <div id="right">
             <div id="coin_list">
-                <input type="text" id="coin_search" placeholder="코인명 검색">
+                <input type="text" id="coin_search" placeholder="코인명 검색" @input="search_onchange()">
                 <div><b-icon-search id="btn_search">sdf</b-icon-search></div>      
             </div>
             <div id="tab_coinDivs">
@@ -27,18 +27,18 @@
                 </ul>
             </div>
             <div id="coin_list_contents">
-                <table>
+                <table id="tbl_coin_list">
                     <tr id="coin_list_col_header">
-                        <th>한글명</th>
-                        <th>현재가</th>
-                        <th>전일대비</th>
-                        <th>거래대금</th>
+                        <th class="center_align">한글명</th>
+                        <th class="right_align">현재가</th>
+                        <th class="right_align">전일대비</th>
+                        <th class="right_align">거래대금</th>
                     </tr>
-                    <tr class="coin_list_content" v-for="coin in coins" v-bind:key="coin.market">                        
-                        <td>{{coin.korean_name}}</td>
-                        <td>57,400,000</td>
-                        <td>+13.33%</td>
-                        <td>1,774,177백만</td>
+                    <tr class="coin_list_content" v-for="coin in coins_list_data" v-bind:key="coin.market">                        
+                        <td class="left_align" style="text-align: left; color: #FFFFFF;">{{coin.korean_name}}</td>
+                        <td class="right_align">{{coin.trade_price}}</td>
+                        <td class="right_align">{{coin.signed_change_rate}}%</td>
+                        <td class="right_align" style="color: #CCCCCC;">{{coin.acc_trade_price_24h}}백만</td>
                     </tr>
                 </table>
             </div>
@@ -215,7 +215,6 @@
     }
 
     #coin_list_col_header th{
-        text-align: center;
         font-size: 12px;
         height: 100%;
         width: 25%;
@@ -231,13 +230,46 @@
     }
 
     .coin_list_content td{
-        text-align: center;
         font-size: 13px;
+        font-weight: bold;
         background-color: #1A2436;
-        color: #FFFFFF;
         height: 100%;
         width: 25%;
     }
+
+    .coin_list_content .left_align {
+        text-align: left;
+        padding-left: 10px;
+    }
+
+    .right_align {
+        text-align: right;
+    }
+
+    .center_align {
+        text-align: center;
+    }
+
+    .border_red {
+      border:#B84042;
+      border-width: 1px;
+      border-style: solid;  
+    }
+
+    .border_blue {
+      border: #0C66C6;  
+      border-width: 1px;
+      border-style: solid;  
+    }
+
+    .text_blue {
+      color: #0C66C6;
+    }
+
+    .text_red {
+      color: #B84042;
+    }
+
 
 </style>
 
@@ -548,9 +580,27 @@ var data =  {
       }
     },
   },
-  coins : [], 
+  coins : [],
+  coins_info : [],
+  coins_list_data : [],
+  selectedCoinData : {
+    marketCode : 'KRW-BTC',
+    korean_name : '비트코인',
+    currentPrice : 0,
+    signed_change_rate : 0,
+  },
 }
 
+function makeMarketCodeList_KRW(data){
+
+  var ret = '';
+
+  for(var i=0; i< data.length; i++){
+     ret += (data[i].market + ',');
+  }
+  
+  return ret.substr(0, ret.length-1);
+}
 
 
 export default {   
@@ -558,13 +608,101 @@ export default {
         apexcharts: VueApexCharts,
     },    
     data: function(){return data}, 
-    created: function(){
-                        const baseURI = 'http://localhost:8080/marketCode?isDetails=true';
-                        axios.get(`${baseURI}`)
+    created: function() {
+      this.retrieve_coin_list_info();
+    },    
+    mounted : function() {
+      setInterval(() => {
+        this.retrieve_coin_list_info();
+      }, 500);
+    },
+    methods : {
+
+      retrieve_coin_list_info : function(){
+                        
+                        axios.get('http://localhost:8080/marketCode?isDetails=true')
                         .then((result) => {
-                            data.coins = result.data;                                             
-                        }
-                    )}
+                            data.coins = result.data;  
+
+                            var marketCodeList_KRW = makeMarketCodeList_KRW(result.data);
+
+                            axios.get('http://localhost:8080/currentCoinInfo', {params: { marketCode : marketCodeList_KRW }})
+                                .then((result) => {
+                                    
+                                    this.setCoinsListData(result.data);                                    
+                                })         
+                        })                 
+                      },
+      setCoinsListData : function(data){
+          this.coins_list_data = [];
+
+          for(var i=0; i<this.coins.length; i++){
+            for(var j=0; j<data.length; j++){
+              if(this.coins[i].market == data[j].market) {
+
+                  data[j].trade_price = Math.floor(data[j].trade_price).toLocaleString();
+                  data[j].signed_change_rate =  (data[j].signed_change_rate * 100).toFixed(2);
+                  if(data[j].signed_change_rate > 0) data[j].signed_change_rate = "+"+String(data[j].signed_change_rate);
+                  data[j].acc_trade_price_24h = Math.floor(data[j].acc_trade_price_24h / 1000000);
+
+                  if(data[j].market == this.selectedCoinData.marketCode){
+                    this.selectedCoinData.korean_name = this.coins[i].korean_name;
+                    this.selectedCoinData.currentPrice = data[j].trade_price;
+                    this.selectedCoinData.signed_change_rate = data[j].signed_change_rate;
+                  }
+
+                  this.coins_list_data.push({market : this.coins[i].market, korean_name : this.coins[i].korean_name, english_name : this.coins[i].english_name, market_warning : this.coins[i].market_warning,
+                    trade_price : data[j].trade_price, signed_change_price : data[j].signed_change_price, signed_change_rate : data[j].signed_change_rate, acc_trade_price_24h : data[j].acc_trade_price_24h
+                  });
+              }        
+            }     
+          }
+
+          this.setClass();
+      },
+
+      setClass : function (){
+
+        var tr_coin_list = document.getElementById('tbl_coin_list').childNodes;
+
+        for(var i=1; i<tr_coin_list.length; i++){
+            var td_signed_change_rate = tr_coin_list[i].childNodes[2];
+            var txt_signed_change_rate = td_signed_change_rate.textContent;
+            this.toggleColorClass(tr_coin_list[i], txt_signed_change_rate);
+        }
+
+        var seletedCoinCurrentPrice = document.getElementById('price_now');
+        this.toggleColorClass(seletedCoinCurrentPrice, this.selectedCoinData.signed_change_rate);
+      },
+
+      toggleColorClass : function(element, signed_change_rate){
+          signed_change_rate = String(signed_change_rate);
+
+          if(signed_change_rate.startsWith('+')){  
+            if(!element.classList.contains('text_red')){            
+              element.classList.remove('text_blue');
+              element.classList.add('text_red');
+            }
+          }
+          else if(signed_change_rate.startsWith('-')){
+            if(!element.classList.contains('text_blue')){
+              element.classList.remove('text_red');
+              element.classList.add('text_blue');
+            }
+          }
+          else {
+            element.classList.remove('text_blue');
+            element.classList.remove('text_red');
+          }
+      },
+
+      search_onchange : function(){
+        var search_value = document.getElementById('coin_search').value;
+
+        console.log(search_value);
+      },
+
+    }
 };
 
 </script>
