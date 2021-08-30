@@ -193,25 +193,23 @@
     }
 
     #coin_list_contents table {
-        height: 100%;
         width: 100%;
     }
 
     #coin_list_contents table tr{
-        display: flex;
+        
         width: 100%;
         border-bottom: 1px solid #333333;
     }
 
     #coin_list_col_header {
-        display: flex;
+        
         position: sticky;
         top: 0px;
         align-items: center;
         color: #666666;
         background-color: #1A2436;
-        width: 100%;
-        height: 100%;
+        
     }
 
     #coin_list_col_header th{
@@ -268,6 +266,10 @@
 
     .text_red {
       color: #B84042;
+    }
+
+    .text_white {
+      color: #FFFFFF;
     }
 
 
@@ -668,38 +670,47 @@ export default {
         for(var i=1; i<tr_coin_list.length; i++){
             var td_signed_change_rate = tr_coin_list[i].childNodes[2];
             var txt_signed_change_rate = td_signed_change_rate.textContent;
-            this.toggleColorClass(tr_coin_list[i], txt_signed_change_rate);
+            this.toggleColorStyle(tr_coin_list[i], txt_signed_change_rate);
         }
 
         var seletedCoinCurrentPrice = document.getElementById('price_now');
-        this.toggleColorClass(seletedCoinCurrentPrice, this.selectedCoinData.signed_change_rate);
+        this.toggleColorStyle(seletedCoinCurrentPrice, this.selectedCoinData.signed_change_rate);
       },
 
-      toggleColorClass : function(element, signed_change_rate){
+      toggleColorStyle : function(element, signed_change_rate){
           signed_change_rate = String(signed_change_rate);
 
           if(signed_change_rate.startsWith('+')){  
-            if(!element.classList.contains('text_red')){            
-              element.classList.remove('text_blue');
-              element.classList.add('text_red');
-            }
+            element.style.color = '#B84042';
           }
           else if(signed_change_rate.startsWith('-')){
-            if(!element.classList.contains('text_blue')){
-              element.classList.remove('text_red');
-              element.classList.add('text_blue');
-            }
+            element.style.color = '#0C66C6';
           }
           else {
-            element.classList.remove('text_blue');
-            element.classList.remove('text_red');
+            element.style.color = 'white';
           }
       },
 
       search_onchange : function(){
         var search_value = document.getElementById('coin_search').value;
+        var tr_coin_list = document.getElementById('tbl_coin_list').childNodes;
 
-        console.log(search_value);
+
+        for(var i=1; i<tr_coin_list.length; i++){
+            if(search_value.length == 0) {
+              tr_coin_list[i].style.display = '';
+              continue;
+            }
+
+            var td_korean_name = String(tr_coin_list[i].childNodes[0].textContent).toLowerCase();
+            
+            if(!td_korean_name.includes(search_value)){
+              tr_coin_list[i].style.display = 'none';
+            }
+            else{
+              tr_coin_list[i].style.display = '';
+            }
+        }
       },
 
     }
