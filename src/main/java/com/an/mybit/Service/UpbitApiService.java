@@ -11,11 +11,13 @@ import java.util.List;
 
 import com.an.mybit.Dto.CurrentCoinInfoDTO;
 import com.an.mybit.Dto.MarketCodeDTO;
+import com.an.mybit.Dto.MinuteCandleDTO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import lombok.AllArgsConstructor;
 
@@ -113,5 +115,49 @@ public class UpbitApiService {
         }
 
         return CurrentCoinInfoDTOList;
+    }
+
+    /**
+     *  마켓코드로 분 캔들 조회
+     * 
+     * @return
+     * @throws 
+     */
+    public List<MinuteCandleDTO> retrieveMinuteCandles(String unit, String market, String to, String count){
+
+        String baseUrl = "https://api.upbit.com/v1/candles/minutes/" + unit + "?market=" + market;
+        if(StringUtils.hasText(to)){
+            baseUrl = baseUrl + "&to=" + to;
+        }
+        if(StringUtils.hasText(count)){
+            baseUrl = baseUrl + "&count=" + count;
+        }
+        
+        BufferedReader br = null;
+        String jsonData = null;
+
+        List<MinuteCandleDTO> MinuteCandleDTOList = null;
+
+        Gson gson = new GsonBuilder().create();
+
+        URL url;
+        try {
+            url = new URL(baseUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            while((jsonData = br.readLine()) != null){
+                MinuteCandleDTOList = gson.fromJson(jsonData, new TypeToken<List<MinuteCandleDTO>>(){}.getType());
+            }     
+
+        } catch (Exception e) {            
+            e.printStackTrace();
+        }
+
+        return MinuteCandleDTOList;
     }
 }
