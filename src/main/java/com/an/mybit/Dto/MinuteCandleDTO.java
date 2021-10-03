@@ -3,7 +3,7 @@ package com.an.mybit.Dto;
 import lombok.Data;
 
 @Data
-public class MinuteCandleDTO {
+public class MinuteCandleDTO implements Comparable<MinuteCandleDTO>{
 
     private String	market;
     private String	candle_date_time_utc;
@@ -16,4 +16,10 @@ public class MinuteCandleDTO {
     private String	candle_acc_trade_price;
     private String	candle_acc_trade_volume;
     private String	unit;
+
+    @Override
+    public int compareTo(MinuteCandleDTO o) {
+
+        return  Integer.valueOf(this.getCandle_date_time_kst()) - Integer.valueOf(o.candle_date_time_kst);
+    }
 }

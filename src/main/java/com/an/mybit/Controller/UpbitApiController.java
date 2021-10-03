@@ -41,8 +41,7 @@ public class UpbitApiController {
 
     @CrossOrigin
     @GetMapping("/minuteCandles/{unit}")
-    public List<MinuteCandleDTO> retrieveMinuteCandles(@PathVariable String unit, @RequestParam String market, @RequestParam(required = false) String to, @RequestParam(required = false) String count){
-
+    public List<MinuteCandleDTO> retrieveMinuteCandles(@PathVariable String unit, @RequestParam String market, @RequestParam(required = false) String to, @RequestParam(required = false) String count){        
 
         return upbitApiService.retrieveMinuteCandles(unit, market, to, count);
     }

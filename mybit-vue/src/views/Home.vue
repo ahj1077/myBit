@@ -43,6 +43,20 @@
                 </div>
               </span>
             </div>
+
+            <div style="padding : 1% 0% 1% 3%;" v-on:change="sbx_candle_onchange($event)">
+              <select name="candle" style="background-color: #1A2436; color: white;">
+                <option value=1>1분</option>
+                <option value=3>3분</option>
+                <option value=5>5분</option>
+                <option value=10>10분</option>
+                <option value=15>15분</option>
+                <option value=30>30분</option>
+                <option value=60>1시간</option>
+                <option value=240>4시간</option>
+              </select>
+            </div>
+
             <div id="chart">
                 <apexcharts type="candlestick" :options="chartOptions" :series="series"></apexcharts>
             </div>        
@@ -58,14 +72,19 @@
                     <li class="tab_current">보유</li>
                 </ul>
             </div>
-            <div id="coin_list_contents">
+            <div id="coin_list_col_header">
+                <ul>
+                    <li class="center_align" style="width : 35%;">
+                      <span v-show="!langFlag" v-on:click="langFlag = !langFlag">한글명</span>
+                      <span v-show="langFlag" v-on:click="langFlag = !langFlag">영문명</span>
+                    </li>
+                    <li class="center_align" style="width : 22%;">현재가</li>
+                    <li class="center_align" style="width : 20%;">전일대비</li>
+                    <li class="center_align" style="width : 23%;">거래대금</li>
+                </ul>
+            </div>
+            <div id="coin_list_contents" style="background-color: #1A2436;">
                 <table id="tbl_coin_list">
-                    <tr id="coin_list_col_header">
-                        <th class="center_align">한글명</th>
-                        <th class="right_align">현재가</th>
-                        <th class="right_align">전일대비</th>
-                        <th class="right_align">거래대금</th>
-                    </tr>
                     <tr class="coin_list_content" v-for="coin in coins_list_data" v-bind:key="coin.market"
                       v-bind:class="{
                           text_red : coin.signed_change_rate.startsWith('+'),
@@ -75,14 +94,14 @@
                         }"                                                              
                       v-on:click="coinItem_onclick(coin)">
 
-                        <td class="left_align" style="text-align: left; color: white;">{{coin.korean_name}}
+                        <td class="left_align" style="text-align: left; color: white; width:32%;"><span v-show="!langFlag">{{coin.korean_name}}</span><span v-show="langFlag">{{coin.english_name}}</span>
                           <div style="font-weight : normal; color: #AAAAAA; font-size : 11px;">{{coin.market.split('-')[1] + '/' + coin.market.split('-')[0]}}</div>                        
                         </td>
-                        <td class="right_align">{{coin.trade_price}}</td>
-                        <td class="right_align" style="font-weight : normal">{{coin.signed_change_rate}}%
+                        <td class="right_align" style="width:30%;">{{coin.trade_price}}</td>
+                        <td class="right_align" style="font-weight : normal; width:15%;">{{coin.signed_change_rate}}%
                           <div>{{coin.signed_change_price}}</div>
                         </td>
-                        <td class="right_align" v-bind:style="{color:'#CCCCCC'}">{{coin.acc_trade_price_24h}}<span  v-bind:style="grayColor">백만</span></td>
+                        <td class="right_align" v-bind:style="{color:'#CCCCCC', width:'23%'}">{{coin.acc_trade_price_24h}}<span  v-bind:style="grayColor" style="font-size:11px;">백만</span></td>
                     </tr>
                 </table>
             </div>
@@ -177,8 +196,7 @@
     #right {
         margin-top: 0.5%;
         margin-left: 1%; 
-        width: 20.5%;
-        height: 1000px;
+        width: 20.5%;        
         background-color: #1A2436;
     }
 
@@ -209,9 +227,9 @@
         border: none;
         color: #aaaaaa;
         background-color: #1A2436;
-        margin-left: 5px;
-        height: 80%;
-        width: 90%;
+        margin-left: 40%;
+        height: 50%;
+        width: 50%;
     }
 
     #tab_coinDivs {
@@ -246,7 +264,6 @@
 
     #coin_list_contents {
         height: 1000px;
-        width: 100%;
         overflow: auto;
         
     }
@@ -260,8 +277,7 @@
         border-bottom: 1px solid #333333;
     }
 
-    #coin_list_col_header {        
-        position: sticky;
+    #coin_list_col_header {    
         top: 0px;
         height: 30px;
         align-items: center;
@@ -270,13 +286,25 @@
         
     }
 
-    #coin_list_col_header th{
-        font-size: 12px;
-        height: 100%;
-        width: 25%;
+    #coin_list_col_header ul {
+      display: flex;
+      align-items: center;      
+      list-style: none;
+      padding: 0px;
+      height: 100%;
+
     }
 
-    #coin_list_col_header th:hover {
+    #coin_list_col_header ul li{
+        font-size: 12px;
+        height: 100%;
+        display: inline;
+        width: 100%;
+        font-weight: bold;
+        padding-top: 1%;
+    }
+
+    #coin_list_col_header ul li:hover {
         text-decoration: underline;
     }
 
@@ -341,6 +369,20 @@
       color: #AAAAAA;
       font-size: 13px;
     }
+
+    ::-webkit-scrollbar {
+       width: 8px; /*스크롤바의 너비*/ 
+    }
+
+    ::-webkit-scrollbar-thumb {
+       background-color: #151E2E; /*스크롤바의 색상*/
+       border: 1px solid;
+    }
+
+    ::-webkit-scrollbar-track {
+       background-color: #1A2436; /*스크롤바 트랙 색상*/ 
+    }
+
 
 </style>
 
@@ -433,6 +475,7 @@ var data =  {
       },
     },
   },
+  langflag : true,
   coins : [],
   coins_info : [],
   coins_list_data : [],
@@ -492,6 +535,12 @@ export default {
         
     },
     methods : {
+
+      sbx_candle_onchange : function(event){
+          this.unit = event.target.value;
+          
+          this.retrieve_candles_init();
+      },
       /** 
        *  코인 리스트를 가져옴
        */
@@ -519,6 +568,7 @@ export default {
 
           for(var i=0; i<this.coins.length; i++){
             for(var j=0; j<data.length; j++){
+
               if(this.coins[i].market == data[j].market) {
 
                    //현재가에 소수점 이하가 존재하는경우 4자리까지
@@ -529,10 +579,10 @@ export default {
                     data[j].trade_price = Math.floor(data[j].trade_price).toLocaleString('ko-KR');
                   }
                   data[j].signed_change_rate =  (data[j].signed_change_rate * 100).toFixed(2);
-                  if(data[j].signed_change_rate > 0) data[j].signed_change_rate = "+"+String(data[j].signed_change_rate);
+                  if(data[j].signed_change_rate > 0) data[j].signed_change_rate = "+" + String(data[j].signed_change_rate);
                   
                   // 전일대비 증감액이 2자릿수 이하면 소수점 둘째자리까지 표시
-                  if(Math.floor(data[j].signed_change_price / 100) >0)
+                  if(Math.floor(Math.abs(data[j].signed_change_price) / 100) > 0)
                     data[j].signed_change_price = Math.floor(data[j].signed_change_price).toLocaleString('ko-KR');
                   else
                     data[j].signed_change_price = parseFloat(data[j].signed_change_price).toFixed(2).toLocaleString('ko-KR');
@@ -574,12 +624,14 @@ export default {
                     }
                   }
 
+                  
                   this.coins_list_data.push({market : this.coins[i].market, korean_name : this.coins[i].korean_name, english_name : this.coins[i].english_name, market_warning : this.coins[i].market_warning,
                     trade_price : data[j].trade_price, signed_change_price : data[j].signed_change_price, signed_change_rate : data[j].signed_change_rate, acc_trade_price_24h : data[j].acc_trade_price_24h
                   });
+
               }        
             }     
-          }       
+          }     
       },     
 
       /**
@@ -628,7 +680,10 @@ export default {
        * 현재 선택된 코인의 분 캔들 200개를 가져와 세팅
        */
       retrieve_candles_init : function(){
-        axios.get('http://localhost:8080/minuteCandles/'+this.unit, {params: { market : this.selectedCoinData.marketCode, count : 200}})
+        var cnt = 200;
+        if(this.unit >= 10) cnt = (24 * 60) / this.unit;
+
+        axios.get('http://localhost:8080/minuteCandles/'+this.unit, {params: { market : this.selectedCoinData.marketCode, count : cnt}})
                         .then((result) => {
                             
                             this.series[0].data = [];

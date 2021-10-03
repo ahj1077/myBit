@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.an.mybit.Dto.CurrentCoinInfoDTO;
@@ -152,7 +153,16 @@ public class UpbitApiService {
 
             while((jsonData = br.readLine()) != null){
                 MinuteCandleDTOList = gson.fromJson(jsonData, new TypeToken<List<MinuteCandleDTO>>(){}.getType());
-            }     
+            }
+            
+            for(int i=0; i<MinuteCandleDTOList.size(); i++){
+                MinuteCandleDTO dto = MinuteCandleDTOList.get(i);
+                String datetime = dto.getCandle_date_time_kst();
+                datetime = datetime.replaceAll("[^0-9]", "");
+                dto.setCandle_date_time_kst(datetime.substring(8));
+            }
+
+            Collections.sort(MinuteCandleDTOList);
 
         } catch (Exception e) {            
             e.printStackTrace();
