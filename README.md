@@ -4,3 +4,5 @@
   
   backend : spring boot
   frontend : vuejs
+
+![ex_screenshot](./img/mybit.png)
