@@ -11,14 +11,18 @@ import java.util.Collections;
 import java.util.List;
 
 import com.an.mybit.Dto.CurrentCoinInfoDTO;
+import com.an.mybit.Dto.DayCandleDTO;
 import com.an.mybit.Dto.MarketCodeDTO;
 import com.an.mybit.Dto.MinuteCandleDTO;
+import com.an.mybit.Dto.MonthCandleDTO;
+import com.an.mybit.Dto.WeekCandleDTO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.AllArgsConstructor;
 
@@ -26,6 +30,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UpbitApiService {
     
+    private RestTemplate restTemplate;
+
     /**
      *  업비트에서 거래 가능한 마켓 목록 조회
      * 
@@ -162,12 +168,94 @@ public class UpbitApiService {
                 dto.setCandle_date_time_kst(datetime.substring(8));
             }
 
-            Collections.sort(MinuteCandleDTOList);
-
         } catch (Exception e) {            
             e.printStackTrace();
         }
 
         return MinuteCandleDTOList;
+    }
+
+     /**
+     *  마켓코드로 일 캔들 조회
+     * 
+     * @return
+     * @throws 
+     */
+    public List<DayCandleDTO> retrieveDayCandles(String market, String to, String count, String convertingPriceUnit){
+
+
+        String baseUrl = "https://api.upbit.com/v1/candles/days" + "?market=" + market;
+
+        if(StringUtils.hasText(to)){
+            baseUrl = baseUrl + "&to=" + to;
+        }
+        if(StringUtils.hasText(count)){
+            baseUrl = baseUrl + "&count=" + count;
+        }
+        if(StringUtils.hasText(convertingPriceUnit)){
+            baseUrl = baseUrl + "&convertingPriceUnit=" + convertingPriceUnit;
+        }
+
+        String jsonStr = restTemplate.getForObject(baseUrl, String.class);
+        
+        Gson gson = new Gson();
+
+        List<DayCandleDTO> list = gson.fromJson(jsonStr, new TypeToken<List<DayCandleDTO>>(){}.getType());
+       
+        return list;
+    }
+
+     /**
+     *  마켓코드로 주 캔들 조회
+     * 
+     * @return
+     * @throws 
+     */
+    public List<WeekCandleDTO> retrieveWeekCandles(String market, String to, String count){
+
+
+        String baseUrl = "https://api.upbit.com/v1/candles/weeks" + "?market=" + market;
+
+        if(StringUtils.hasText(to)){
+            baseUrl = baseUrl + "&to=" + to;
+        }
+        if(StringUtils.hasText(count)){
+            baseUrl = baseUrl + "&count=" + count;
+        }
+
+        String jsonStr = restTemplate.getForObject(baseUrl, String.class);
+        
+        Gson gson = new Gson();
+
+        List<WeekCandleDTO> list = gson.fromJson(jsonStr, new TypeToken<List<WeekCandleDTO>>(){}.getType());
+       
+        return list;
+    }
+
+    /**
+     *  마켓코드로 월 캔들 조회
+     * 
+     * @return
+     * @throws 
+     */
+    public List<MonthCandleDTO> retrieveMonthCandles(String market, String to, String count){
+
+
+        String baseUrl = "https://api.upbit.com/v1/candles/months" + "?market=" + market;
+
+        if(StringUtils.hasText(to)){
+            baseUrl = baseUrl + "&to=" + to;
+        }
+        if(StringUtils.hasText(count)){
+            baseUrl = baseUrl + "&count=" + count;
+        }
+
+        String jsonStr = restTemplate.getForObject(baseUrl, String.class);
+        
+        Gson gson = new Gson();
+
+        List<MonthCandleDTO> list = gson.fromJson(jsonStr, new TypeToken<List<MonthCandleDTO>>(){}.getType());
+       
+        return list;
     }
 }

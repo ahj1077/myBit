@@ -3,8 +3,11 @@ package com.an.mybit.Controller;
 import java.util.List;
 
 import com.an.mybit.Dto.CurrentCoinInfoDTO;
+import com.an.mybit.Dto.DayCandleDTO;
 import com.an.mybit.Dto.MarketCodeDTO;
 import com.an.mybit.Dto.MinuteCandleDTO;
+import com.an.mybit.Dto.MonthCandleDTO;
+import com.an.mybit.Dto.WeekCandleDTO;
 import com.an.mybit.Service.UpbitApiService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,27 @@ public class UpbitApiController {
     public List<MinuteCandleDTO> retrieveMinuteCandles(@PathVariable String unit, @RequestParam String market, @RequestParam(required = false) String to, @RequestParam(required = false) String count){        
 
         return upbitApiService.retrieveMinuteCandles(unit, market, to, count);
+    }
+
+    @CrossOrigin
+    @GetMapping("/dayCandles")
+    public List<DayCandleDTO> retrieveDayCandles(@RequestParam String market, @RequestParam(required = false) String to, @RequestParam(required = false) String count, @RequestParam(required = false)  String convertingPriceUnit){        
+
+        return upbitApiService.retrieveDayCandles(market, to, count, convertingPriceUnit);
+    }
+
+    @CrossOrigin
+    @GetMapping("/weekCandles")
+    public List<WeekCandleDTO> retrieveWeekCandles(@RequestParam String market, @RequestParam(required = false) String to, @RequestParam(required = false) String count){        
+
+        return upbitApiService.retrieveWeekCandles(market, to, count);
+    }
+
+    @CrossOrigin
+    @GetMapping("/monthCandles")
+    public List<MonthCandleDTO> retrieveMonthCandles(@RequestParam String market, @RequestParam(required = false) String to, @RequestParam(required = false) String count){        
+
+        return upbitApiService.retrieveMonthCandles(market, to, count);
     }
     
 }

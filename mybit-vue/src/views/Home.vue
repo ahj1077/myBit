@@ -45,7 +45,7 @@
             </div>
 
             <div style="padding : 1% 0% 1% 3%;" v-on:change="sbx_candle_onchange($event)">
-              <select name="candle" style="background-color: #1A2436; color: white;">
+              <select name="candle" style="background-color: #1A2436; color: white;" v-model="unit">
                 <option value=1>1분</option>
                 <option value=3>3분</option>
                 <option value=5>5분</option>
@@ -54,6 +54,9 @@
                 <option value=30>30분</option>
                 <option value=60>1시간</option>
                 <option value=240>4시간</option>
+                <option value='day'>1일</option>
+                <option value='week'>1주</option>
+                <option value='month'>한 달</option>
               </select>
             </div>
 
@@ -433,7 +436,25 @@ var data =  {
             text: 'Annotation Test'
           }
         }
+      ],
+      yaxis:[
+        {
+          y: null,
+          strokeDashArray: 5,
+          borderColor: '#00E396',
+          label: {
+            borderColor: '#00E396',
+            style: {
+              fontSize: '12px',
+              color: '#fff',
+              background: '#00E396',
+            },            
+            text: 'Annotation Test',
+            offsetX : 70,
+          }
+        }
       ]
+
     },
     tooltip: {
       enabled: true,
@@ -443,8 +464,12 @@ var data =  {
       labels: {
         formatter: function(val) {
             val = String(val);
-            if(val.substr(2,2) == '30' || val.substr(2,2) == '00') return val.substr(0,2) + ':' + val.substr(2,2);
-            return '';
+            if(val.length == 6){
+              if(1==2 || val.substr(2,2) == '30' || val.substr(2,2) == '00') return val.substr(0,2) + ':' + val.substr(2,2);
+              else return '';
+            }
+            else return val;
+
         },
         style : {
           colors : '#666666',
@@ -497,6 +522,9 @@ var data =  {
   redColor: { color : '#B84042'},
   blueColor: { color : '#0C66C6'},
   grayColor: { color : '#666666'},
+  interval_coin_list_info : null,
+  interval_current_candle: null,
+
 }
 
 function makeMarketCodeList_KRW(data){
@@ -522,11 +550,11 @@ export default {
     mounted : function() {
       this.retrieve_candles_init();
 
-      setInterval(() => {
+      this.interval_coin_list_info = setInterval(() => {
         this.retrieve_coin_list_info();
       }, 500);
 
-      setInterval(() => {
+      this.interval_current_candle = setInterval(() => {
         this.retrieve_current_candle();
       }, 300);
 
@@ -535,12 +563,13 @@ export default {
         
     },
     methods : {
+      sbx_candle_onchange : function(){
 
-      sbx_candle_onchange : function(event){
-          this.unit = event.target.value;
-          
+          //현재 캔들 데이터 가져오는거 중지
+          clearInterval(this.interval_current_candle);  
           this.retrieve_candles_init();
       },
+
       /** 
        *  코인 리스트를 가져옴
        */
@@ -642,7 +671,7 @@ export default {
         var tr_coin_list = document.getElementById('tbl_coin_list').childNodes;
 
 
-        for(var i=1; i<tr_coin_list.length; i++){
+        for(var i=0; i<tr_coin_list.length; i++){
             if(search_value.length == 0) {
               tr_coin_list[i].style.display = '';
               continue;
@@ -677,24 +706,40 @@ export default {
       },
 
       /**
-       * 현재 선택된 코인의 분 캔들 200개를 가져와 세팅
+       * 현재 선택된 코인의 캔들을 가져와 초기 세팅
        */
       retrieve_candles_init : function(){
-        var cnt = 200;
-        if(this.unit >= 10) cnt = (24 * 60) / this.unit;
 
-        axios.get('http://localhost:8080/minuteCandles/'+this.unit, {params: { market : this.selectedCoinData.marketCode, count : cnt}})
+        var baseUrl = 'http://localhost:8080/';
+        var cnt = null;
+        var today = new Date();
+
+        if(this.unit == 'day' || this.unit == 'week' || this.unit == 'month'){          
+          cnt = 200;
+          baseUrl += (this.unit + 'Candles/');
+        }
+        else{
+          
+          baseUrl += ('minuteCandles/' + this.unit );
+          cnt = Math.floor((today.getHours() * 60 + today.getMinutes()) / this.unit);        
+        }
+
+        axios.get(baseUrl, {params: { market : this.selectedCoinData.marketCode, count : cnt}})
                         .then((result) => {
                             
                             this.series[0].data = [];
 
-                            for(var i =0; i<result.data.length; i++){
+                            for(var i =result.data.length - 1; i >= 0; i--){
                               var data = result.data[i];
                               var candle_date_time_kst = data.candle_date_time_kst;
                               var opening_price =  Math.floor(data.opening_price);
                               var high_price = Math.floor(data.high_price);
                               var low_price =  Math.floor(data.low_price);
                               var trade_price =  Math.floor(data.trade_price);
+
+                              if(this.unit == 'day' || this.unit == 'week' || this.unit == 'month'){
+                                candle_date_time_kst = candle_date_time_kst.substr(0,10);
+                              }
 
                               var candle_data = {
                                   x : candle_date_time_kst, 
@@ -703,47 +748,71 @@ export default {
 
                               this.series[0].data.push(candle_data);                      
                             }
-                            window.dispatchEvent(new Event('resize'));                          
+
+                            var lastIdx = this.series[0].data.length - 1;
+
+                            this.chartOptions.annotations.yaxis[0].y = this.series[0].data[lastIdx].y[3];
+                            this.chartOptions.annotations.yaxis[0].label.text = this.series[0].data[lastIdx].y[3];
+
+                            window.dispatchEvent(new Event('resize'));     
+                            
+                            //현재 선택된 코인의 캔들 주기적으로 받아옴
+                            this.interval_current_candle = setInterval(() => {
+                              this.retrieve_current_candle();
+                            }, 300);
                         }) 
+             
 
       },
 
       /**
-       * 현재 선택된 코인의 캔들을 받아옴
+       * 현재 선택된 코인의 정보를 받아옴 (캔들 갱신)
        */
       retrieve_current_candle : function(){
 
-          axios.get('http://localhost:8080/minuteCandles/'+this.unit, {params: { market : this.selectedCoinData.marketCode}})
-                        .then((result) => {
-                            
-                            var data = result.data[0];
-                            var candle_date_time_kst = data.candle_date_time_kst;
-                            var opening_price =  Math.floor(data.opening_price);
-                            var high_price = Math.floor(data.high_price);
-                            var low_price =  Math.floor(data.low_price);
-                            var trade_price =  Math.floor(data.trade_price);
-                            
-                            var candle_data = {
-                                x : candle_date_time_kst, 
-                                y : [opening_price, high_price, low_price, trade_price]
-                            };
+        var baseUrl = 'http://localhost:8080/';
 
-                            var lastIdx = this.series[0].data.length - 1;
-                            if(lastIdx == -1) {
-                              lastIdx = 0;
-                              this.series[0].data.push(candle_data);
-                            }
-                            else{
-                              if(this.series[0].data[lastIdx].x == candle_date_time_kst){
-                                this.series[0].data[lastIdx].y = candle_data.y;
-                              }
-                              else{
-                                this.series[0].data.push(candle_data);
-                              }
-                            }  
-                            window.dispatchEvent(new Event('resize'));                          
-                        }) 
-      },
+        if(this.unit == 'day' || this.unit == 'week' || this.unit == 'month'){
+          baseUrl += (this.unit + 'Candles/');
+        }
+        else{          
+          baseUrl += ('minuteCandles/' + this.unit );  
+        }
+
+        axios.get(baseUrl, {params: { market : this.selectedCoinData.marketCode, count : 1}})
+                      .then((result) => {                        
+                       
+                          var data = result.data[0];
+                          var candle_date_time_kst = data.candle_date_time_kst;
+                          var opening_price =  Math.floor(data.opening_price);
+                          var high_price = Math.floor(data.high_price);
+                          var low_price =  Math.floor(data.low_price);
+                          var trade_price =  Math.floor(data.trade_price);
+
+                          if(this.unit == 'day' || this.unit == 'week' || this.unit == 'month'){
+                            candle_date_time_kst = candle_date_time_kst.substr(0,10);
+                          }
+
+                          var candle_data = {
+                              x : candle_date_time_kst, 
+                              y : [opening_price, high_price, low_price, trade_price]
+                          };          
+                          
+                          var lastIdx = this.series[0].data.length - 1;
+
+                          if(this.series[0].data[lastIdx].x == candle_date_time_kst){
+                            this.series[0].data[lastIdx].y = candle_data.y;
+                          }
+                          else{
+                            this.series[0].data.push(candle_data);  
+                          }                
+                          
+                          this.chartOptions.annotations.yaxis[0].y = trade_price;
+                          this.chartOptions.annotations.yaxis[0].label.text = trade_price.toLocaleString();
+                          
+                          window.dispatchEvent(new Event('resize'));     
+                      }) 
+        },     
 
     }
 };
