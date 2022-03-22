@@ -4,6 +4,8 @@
       <div id="coin_name">
         <div id="coin_divs">{{selectedCoinData.korean_name}}</div>
       </div>
+      <div id="divs">
+      </div>
     </div>
     <CoinList/>
   </div>
@@ -23,6 +25,11 @@
   margin-left: 10%;
   background-color: #1A2436;
   color: #FFFFFF;
+}
+
+#divs {
+  height : 20px;
+  background-color: #FFFFFF;
 }
 
 </style>
