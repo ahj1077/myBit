@@ -1,14 +1,14 @@
 <template>
     <div id="navbar">
         <div id="logo">
-            <a href="#"><h3>MyBit</h3></a>
+            <a href="/"><h3>MyBit</h3></a>
         </div>
 
         <div id="nav_list">
             <ul id="ul">
                 <li><a href="/">거래소</a></li>
                 <li><a href="/myCoin">나의 코인</a></li>
-                <li><a href="#">김치프리미엄</a></li>
+                <li><a href="/discussionRoom">종토방</a></li>
             </ul>
         </div>  
     </div>
