@@ -1,6 +1,6 @@
 <template>
   <div id="main">
-    <Board/>
+    <NewPost/>
     <CoinList/>
   </div>
 </template>
@@ -15,25 +15,14 @@
 </style>
 
 <script>
-import Board from "@/components/layout/Board.vue";
 import CoinList from "@/components/layout/CoinList.vue";
+import NewPost from "@/components/layout/NewPost";
 
-var data =  {
-  selectedCoinData: {
-    marketCode: 'KRW-BTC',
-    korean_name: '비트코인',
-    currentPrice: 0,
-    signed_change_rate: '0',
-    signed_change_price: '0',
-    high_price: 0,
-    low_price: 0,
-    acc_trade_price_24h: 0,
-    acc_trade_volume_24h: 0,
-  },
+var data = {
+
 }
-
 export default {
-  components: {Board, CoinList},
+  components: {NewPost, CoinList},
   data: function(){return data},
   created: function() {
 
