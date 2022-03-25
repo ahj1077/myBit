@@ -22,6 +22,7 @@ var data = {
 
 }
 export default {
+  name: 'newPost',
   components: {NewPost, CoinList},
   data: function(){return data},
   created: function() {

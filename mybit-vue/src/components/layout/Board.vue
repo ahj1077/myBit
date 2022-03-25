@@ -13,23 +13,19 @@
           <li style="width: 12%">작성일</li>
         </ul>
       </div>
+
       <table id="tbl_posts">
-        <tr class="post" style="height : 30px; text-align: left; border-bottom: 1px solid #2B3547;">
-          <td class="post_title" style="width: 70%; padding-left: 3%;">테스트제목1</td>
-          <td style="width: 10%;">안형준</td>
-          <td style="width: 10%; text-align: center;">1</td>
-          <td style="width: 10%; font-size: 10px">2022-03-23 20:51</td>
-        </tr>
-        <tr class="post" style="height : 30px; text-align: left; border-bottom: 1px solid #2B3547;">
-          <td class="post_title" style="width: 70%; padding-left: 3%;">테스트제목1</td>
-          <td style="width: 10%;">안형준</td>
-          <td style="width: 10%; text-align: center;">1</td>
-          <td style="width: 10%; font-size: 10px">2022-03-23 20:51</td>
+        <tr class = "post" v-for="post in posts" v-bind:key = "post.id">
+          <td class="post_title" style="width: 70%; padding-left: 3%;">{{post.title}}</td>
+          <td style="width: 10%;">{{post.writer}}</td>
+          <td style="width: 10%; text-align: center;">{{post.recommendCount}}</td>
+          <td style="width: 10%; font-size: 10px">{{post.writeDttm}}</td>
         </tr>
       </table>
+
       <div style="padding-top: 8px; padding-right: 10px">
           <span style="float: right">
-            <a href="/newPost" id="btn_write">글쓰기</a>
+            <router-link id="btn_write" :to="{name : 'newPost', query : {market : this.selectedCoinData.market, korean_name : this.selectedCoinData.korean_name}}">글쓰기</router-link>
           </span>
       </div>
       <div style="width: 100%; text-align: center">
@@ -83,17 +79,23 @@
   border: 1px solid #0C66C6;
 }
 
+.post {
+  height : 30px;
+  text-align: left;
+  border-bottom: 1px solid #2B3547;
+}
+
 
 </style>
 
 
 <script>
-//import axios from "axios";
 import { eventBus } from "@/main.js";
+import axios from "axios";
 
 var data =  {
   selectedCoinData: {
-    marketCode: 'KRW-BTC',
+    market: 'KRW-BTC',
     korean_name: '비트코인',
     currentPrice: 0,
     signed_change_rate: '0',
@@ -103,6 +105,8 @@ var data =  {
     acc_trade_price_24h: 0,
     acc_trade_volume_24h: 0,
   },
+
+  posts : [],
 }
 
 export default {
@@ -113,7 +117,12 @@ export default {
   created: function() {
     eventBus.$on("clickCoinList", (clickedCoinData) => {
       this.selectedCoinData = clickedCoinData;
+
+      //게시글 목록 조회
+      this.retrievePosts()
     });
+
+    this.retrievePosts();
   },
   beforeDestroy : function(){
     eventBus.$off("clickCoinList");
@@ -123,6 +132,26 @@ export default {
   },
   methods : {
 
+    /**
+     * 현재 선택된 코인의 게시글 목록 조회
+     */
+    retrievePosts : function(){
+      const selectedCoinMarket = this.selectedCoinData.market.split('-')[1];
+
+      const url = 'http://localhost:8080/board/posts/' + selectedCoinMarket;
+
+      axios.get(url).then((response) => {
+        if(response.status == 200){
+          console.log(response.data);
+          const posts = response.data;
+          this.posts = [];
+
+          for(let i=0; i<posts.length; i++){
+            this.posts.push(posts[i]);
+          }
+        }
+      });
+    }
   }
 };
 

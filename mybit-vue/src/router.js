@@ -11,10 +11,11 @@ Vue.use(VueRouter);
 const router = new VueRouter({  //eslint-disable-line no-unused-vars
     mode: "history",
     routes: [
-        { path: "/", component: Home },
+        { path: "/", redirect : "/home"},
+        { path: "/home", component : Home},
         { path: "/myCoin", component: MyCoin },
         { path: "/discussionRoom", component: DiscussionRoom },
-        { path: "/newPost", component: NewPost }
+        { path: "/newPost", name: 'newPost', component: NewPost }
     ]
 })
 

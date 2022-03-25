@@ -1,7 +1,8 @@
 <template>
   <div id="left">
     <div id="header" style="height: 10%; font-size: 20px">
-      <div id="title">글쓰기</div>
+      <div id="title"><span ref="coinKoreanName">{{$route.query.korean_name}}</span> 종토방 글쓰기</div>
+      <div style="display: none" ref="coinMarket">{{$route.query.market}}</div>
     </div>
     <form @submit="checkForm" method="post">
       <div style="width: 100%; padding: 5% 5% 2% 5%;">
@@ -78,8 +79,14 @@
 import axios from "axios";
 
 var data= {
+
   title : '',
   content : '',
+  coinSymbol : '',
+  writer : '',
+
+  coinData : {
+  }
 }
 
 export default {
@@ -113,13 +120,23 @@ export default {
 
     createNewPost : function(){
       var baseUrl = 'http://localhost:8080/board/newPost';
+
+      const coinSymbol = this.$refs.coinMarket.innerText.split('-')[1];
+
       let form = new FormData();
       form.append('title', this.title);
+      form.append('coinSymbol', coinSymbol);
       form.append('content',this.content);
+      form.append('writer', '임시');
 
       axios.post(baseUrl, form)
       .then((response) => {
         console.log(response);
+        alert(JSON.stringify(response));
+        if(response.status == 200){
+          //var router = this.$router;
+          //router.push('/discussionRoom'); //종토방으로 redirect
+        }
       });
     }
   }

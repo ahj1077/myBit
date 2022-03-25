@@ -2,12 +2,12 @@ package com.an.mybit.Controller;
 
 import java.util.List;
 
-import com.an.mybit.Dto.CurrentCoinInfoDTO;
-import com.an.mybit.Dto.DayCandleDTO;
-import com.an.mybit.Dto.MarketCodeDTO;
-import com.an.mybit.Dto.MinuteCandleDTO;
-import com.an.mybit.Dto.MonthCandleDTO;
-import com.an.mybit.Dto.WeekCandleDTO;
+import com.an.mybit.DTO.CurrentCoinInfoDTO;
+import com.an.mybit.DTO.DayCandleDTO;
+import com.an.mybit.DTO.MarketCodeDTO;
+import com.an.mybit.DTO.MinuteCandleDTO;
+import com.an.mybit.DTO.MonthCandleDTO;
+import com.an.mybit.DTO.WeekCandleDTO;
 import com.an.mybit.Service.UpbitApiService;
 
 import org.springframework.beans.factory.annotation.Autowired;

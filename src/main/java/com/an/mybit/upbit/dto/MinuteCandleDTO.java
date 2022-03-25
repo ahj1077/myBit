@@ -1,9 +1,9 @@
-package com.an.mybit.Dto;
+package com.an.mybit.DTO;
 
 import lombok.Data;
 
 @Data
-public class WeekCandleDTO {
+public class MinuteCandleDTO{
 
     private String	market;
     private String	candle_date_time_utc;
@@ -15,6 +15,6 @@ public class WeekCandleDTO {
     private String	timestamp;
     private String	candle_acc_trade_price;
     private String	candle_acc_trade_volume;
-    private String	first_day_of_period;
+    private String	unit;
 
 }
