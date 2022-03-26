@@ -4,6 +4,7 @@ import Home from './views/Home.vue'
 import MyCoin from './views/MyCoin.vue'
 import DiscussionRoom from './views/DiscussionRoom.vue'
 import NewPost from './views/NewPost.vue'
+import Post from './views/Post.vue'
 
 
 Vue.use(VueRouter);
@@ -15,7 +16,8 @@ const router = new VueRouter({  //eslint-disable-line no-unused-vars
         { path: "/home", component : Home},
         { path: "/myCoin", component: MyCoin },
         { path: "/discussionRoom", component: DiscussionRoom },
-        { path: "/newPost", name: 'newPost', component: NewPost }
+        { path: "/newPost", name: 'newPost', component: NewPost},
+        { path: "/post", name: 'post', component: Post}
     ]
 })
 

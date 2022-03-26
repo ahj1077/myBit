@@ -5,7 +5,7 @@
     </div>
     <div class="line"/>
     <div style="width: 100%;">
-      <div id="header" style="text-align: center; padding-top: 8px; height:40px; border-bottom: 1px solid #FFFFFF;">
+      <div id="header" style="text-align: center; padding-top: 15px; height:40px; border-bottom: 1px solid #FFFFFF;">
         <ul>
           <li style="width: 65%">제목</li>
           <li style="width: 12%">작성자</li>
@@ -16,7 +16,11 @@
 
       <table id="tbl_posts">
         <tr class = "post" v-for="post in posts" v-bind:key = "post.id">
-          <td class="post_title" style="width: 70%; padding-left: 3%;">{{post.title}}</td>
+          <td style="width: 70%; padding-left: 3%;">
+            <span class="post_title" v-on:click="postTitle_onclick(post.id, $event)">
+              <span style="display:none">{{post.id}}</span>{{post.title}}
+            </span>
+          </td>
           <td style="width: 10%;">{{post.writer}}</td>
           <td style="width: 10%; text-align: center;">{{post.recommendCount}}</td>
           <td style="width: 10%; font-size: 10px">{{post.writeDttm}}</td>
@@ -128,9 +132,15 @@ export default {
     eventBus.$off("clickCoinList");
   },
   mounted : function() {
-
+  },
+  updated : function(){
   },
   methods : {
+    postTitle_onclick : function(id){
+      var router = this.$router;
+      router.push('/post?id=' + id + '&korean_name=' + this.selectedCoinData.korean_name
+        + '&market=' + this.selectedCoinData.market); //게시글로 이동
+    },
 
     /**
      * 현재 선택된 코인의 게시글 목록 조회
@@ -142,7 +152,6 @@ export default {
 
       axios.get(url).then((response) => {
         if(response.status == 200){
-          console.log(response.data);
           const posts = response.data;
           this.posts = [];
 

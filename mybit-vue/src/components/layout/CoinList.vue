@@ -273,8 +273,7 @@ export default {
     }, 500);
   },
   beforeDestroy : function() {
-    eventBus.$off("updateCoinData");
-    eventBus.$off("clickCoinList");
+    clearInterval(this.interval_coin_list_info);''
   },
   methods : {
     /**

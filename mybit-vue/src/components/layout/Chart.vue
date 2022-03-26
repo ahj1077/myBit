@@ -189,7 +189,7 @@ let coinListData = {
       type: 'candlestick',
     },
     title: {
-      text: 'CandleStick Chart - Category X-axis',
+      text: '',
       align: 'left'
     },
     plotOptions: {
@@ -207,13 +207,13 @@ let coinListData = {
       xaxis: [
         {
           x: 'Oct 06 14:00',
-          borderColor: '#00E396',
+          borderColor: '#111111',
           label: {
-            borderColor: '#00E396',
+            borderColor: '#111111',
             style: {
               fontSize: '12px',
-              color: '#fff',
-              background: '#00E396'
+              color: '#FFFFFF',
+              background: '#111111'
             },
             orientation: 'horizontal',
             offsetY: 7,
@@ -225,13 +225,13 @@ let coinListData = {
         {
           y: null,
           strokeDashArray: 5,
-          borderColor: '#00E396',
+          borderColor: '#B84042',
           label: {
-            borderColor: '#00E396',
+            borderColor: '#B84042',
             style: {
               fontSize: '12px',
               color: '#fff',
-              background: '#00E396',
+              background: '#B84042',
             },
             text: 'Annotation Test',
             offsetX : 70,
@@ -329,6 +329,8 @@ export default {
   beforeDestroy() {
     eventBus.$off("updateCoinData");
     eventBus.$off("clickCoinList");
+
+    clearInterval(this.interval_current_candle);
   },
   methods : {
 

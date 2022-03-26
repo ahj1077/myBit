@@ -4,24 +4,24 @@
       <div id="title"><span ref="coinKoreanName">{{$route.query.korean_name}}</span> 종토방 글쓰기</div>
       <div style="display: none" ref="coinMarket">{{$route.query.market}}</div>
     </div>
-    <form @submit="checkForm" method="post">
-      <div style="width: 100%; padding: 5% 5% 2% 5%;">
+    <div>
+      <div style="width: 100%; padding: 5% 5% 5% 5%; border-bottom: 1px solid #333333;">
         <input type="text" v-model="title"  style="width: 100%;" placeholder="제목을 입력해주세요."/>
       </div>
-      <div style="width: 100%; height: 500px; padding: 2% 5% 2% 5%;">
+      <div style="width: 100%; height: 500px; padding: 2% 5% 5% 5%;">
         <textarea style="width: 100%; height: 100%" v-model="content" placeholder="본문을 입력해주세요."></textarea>
       </div>
       <div style="padding-right: 5%">
         <span style="float: right">
           <span style="margin-right: 10px">
-            <input type="button" id="btn_cancel" value="취소"/>
+            <input type="button" id="btn_cancel" value="취소" v-on:click="btn_cancel_onclick"/>
           </span>
           <span style="">
-            <input type="submit" id="btn_save" value="등록"/>
+            <input type="submit" id="btn_save" value="등록" v-on:click="checkForm"/>
           </span>
         </span>
       </div>
-    </form>
+    </div>
   </div>
 </template>
 
@@ -84,9 +84,9 @@ var data= {
   content : '',
   coinSymbol : '',
   writer : '',
-
   coinData : {
-  }
+  },
+  errors : []
 }
 
 export default {
@@ -104,15 +104,19 @@ export default {
 
   },
   methods : {
-    checkForm : function(e){
+    checkForm : function(){
+      this.errors = [];
 
       if(this.title.length === 0){
-        alert("제목을 입력해 주세요.");
-        e.preventDefault();
+        this.errors.push("제목을 입력해 주세요.");
       }
       else if(this.content.length === 0){
-        alert("내용을 입력해 주세요.");
-        e.preventDefault();
+        this.errors.push("내용을 입력해 주세요.");
+      }
+
+      if(this.errors.length > 0){
+        alert(this.errors[0]);
+        return;
       }
 
       this.createNewPost();
@@ -131,13 +135,17 @@ export default {
 
       axios.post(baseUrl, form)
       .then((response) => {
-        console.log(response);
-        alert(JSON.stringify(response));
-        if(response.status == 200){
-          //var router = this.$router;
-          //router.push('/discussionRoom'); //종토방으로 redirect
+
+        if(response.status == 200) {
+          var router = this.$router;
+          router.push('/discussionRoom'); //종토방으로 redirect
         }
       });
+    },
+
+    btn_cancel_onclick : function(){
+      var router = this.$router;
+      router.go(-1); //종토방으로
     }
   }
 };
