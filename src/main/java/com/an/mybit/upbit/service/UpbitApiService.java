@@ -1,4 +1,13 @@
-package com.an.mybit.Service;
+package com.an.mybit.upbit.service;
+
+import com.an.mybit.upbit.dto.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,22 +17,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.an.mybit.DTO.CurrentCoinInfoDTO;
-import com.an.mybit.DTO.DayCandleDTO;
-import com.an.mybit.DTO.MarketCodeDTO;
-import com.an.mybit.DTO.MinuteCandleDTO;
-import com.an.mybit.DTO.MonthCandleDTO;
-import com.an.mybit.DTO.WeekCandleDTO;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
-
-import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor

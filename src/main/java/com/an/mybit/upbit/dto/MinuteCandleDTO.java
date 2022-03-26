@@ -1,4 +1,4 @@
-package com.an.mybit.DTO;
+package com.an.mybit.upbit.dto;
 
 import lombok.Data;
 

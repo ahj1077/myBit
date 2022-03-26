@@ -1,4 +1,4 @@
-package com.an.mybit.Config;
+package com.an.mybit.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

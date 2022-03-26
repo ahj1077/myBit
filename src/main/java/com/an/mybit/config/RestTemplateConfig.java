@@ -1,4 +1,4 @@
-package com.an.mybit.Config;
+package com.an.mybit.config;
 
 import java.nio.charset.Charset;
 import java.time.Duration;
