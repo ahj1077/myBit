@@ -173,7 +173,7 @@ export default {
 
       axios.delete(baseUrl)
           .then((response) => {
-            if(response.status == 200) {
+            if(response.status === 200) {
               const router = this.$router;
               router.go(-1); //종토방으로
             }

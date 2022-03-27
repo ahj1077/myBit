@@ -116,6 +116,7 @@ export default {
 
       if(this.errors.length > 0){
         alert(this.errors[0]);
+        this.errors = [];
         return;
       }
 

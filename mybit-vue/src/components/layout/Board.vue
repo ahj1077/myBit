@@ -86,7 +86,12 @@
 .post {
   height : 30px;
   text-align: left;
+  background-color: #1A2436;
   border-bottom: 1px solid #2B3547;
+}
+
+.post:hover{
+  background-color: #1F2A3C;
 }
 
 

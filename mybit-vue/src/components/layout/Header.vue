@@ -5,12 +5,13 @@
         </div>
 
         <div id="nav_list">
-            <ul id="ul">
+            <ul id="ul" style="width: 100%">
                 <li><a href="/">거래소</a></li>
                 <li><a href="/myCoin">나의 코인</a></li>
                 <li><a href="/discussionRoom">종토방</a></li>
+                <li style="float: right; margin-right: 15%"><router-link :to="{name : 'login'}">로그인</router-link></li>
             </ul>
-        </div>  
+        </div>
     </div>
 </template>
 
@@ -60,6 +61,11 @@
         align-items: center;
         margin-left: 3%;
         height: 100%;
+        width: 100%;
+    }
+
+    #login{
+      float: right;
     }
 
 </style>

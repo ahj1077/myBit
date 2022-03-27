@@ -399,6 +399,7 @@ export default {
     },
 
     coinItem_onclick : function(coin){
+
       eventBus.$emit("clickCoinList", coin);
     },
 

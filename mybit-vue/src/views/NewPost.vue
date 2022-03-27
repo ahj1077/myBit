@@ -9,7 +9,7 @@
 #main {
   display: flex;
   align-items:flex-start;
-  height: 70%;
+  height: 80%;
 }
 
 </style>
