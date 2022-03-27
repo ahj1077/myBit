@@ -5,4 +5,6 @@
   backend : spring boot
   frontend : vuejs
 
-![ex_screenshot](./img/mybit.png)
+![ex_screenshot](./img/mybit_home.png)
+![ex_screenshot](./img/mybit_discussionRoom.png)
+
