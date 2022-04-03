@@ -25,13 +25,12 @@
       <table id="tbl_coin_list">
         <tr class="coin_list_content" v-for="coin in coins_list_data" v-bind:key="coin.market"
             v-bind:class="{
+                          selected_color : isSelectedCoin(coin.market)/* coin.market === selectedCoinData.marketCode*/,
                           text_red : coin.signed_change_rate.startsWith('+'),
                           text_blue : coin.signed_change_rate.startsWith('-'),
                           text_white : coin.signed_change_rate.startsWith('+') === false && coin.signed_change_rate.startsWith('-') === false,
-                          selected_color : coin.market == selectedCoinData.marketCode
-                        }"
+            }"
             v-on:click="coinItem_onclick(coin)">
-
           <td class="left_align" style="text-align: left; color: white; width:32%;"><span v-show="!langFlag">{{coin.korean_name}}</span><span v-show="langFlag">{{coin.english_name}}</span>
             <div style="font-weight : normal; color: #AAAAAA; font-size : 11px;">{{coin.market.split('-')[1] + '/' + coin.market.split('-')[0]}}</div>
           </td>
@@ -248,6 +247,7 @@ let coinListData = {
   redColor: { color : '#B84042'},
   blueColor: { color : '#0C66C6'},
   grayColor: { color : '#666666'},
+  test : 'KRW-MTL',
 };
 
 function makeMarketCodeList_KRW(data){
@@ -281,13 +281,13 @@ export default {
      */
     retrieve_coin_list_info: function () {
 
-      axios.get('http://localhost:8080/marketCode?isDetails=true')
+      axios.get('http://localhost:8080/upbit/marketCode?isDetails=true')
           .then((result) => {
             coinListData.coins = result.data;
 
             var marketCodeList_KRW = makeMarketCodeList_KRW(result.data);
 
-            axios.get('http://localhost:8080/currentCoinInfo', {params: {marketCode: marketCodeList_KRW}})
+            axios.get('http://localhost:8080/upbit/currentCoinInfo', {params: {marketCode: marketCodeList_KRW}})
                 .then((result) => {
                   this.setCoinsListData(result.data);
                 })
@@ -321,7 +321,7 @@ export default {
             else
               data[j].signed_change_price = parseFloat(data[j].signed_change_price).toFixed(2).toLocaleString('ko-KR');
 
-            var selectedCoinAccTragePrice24h = Math.floor(data[j].acc_trade_price_24h).toLocaleString('ko-KR');
+            var selectedCoinAccTradePrice24h = Math.floor(data[j].acc_trade_price_24h).toLocaleString('ko-KR');
             data[j].acc_trade_price_24h = Math.floor(data[j].acc_trade_price_24h / 1000000).toLocaleString('ko-KR');   //거래대금
             data[j].acc_trade_volume_24h = parseFloat(parseFloat(data[j].acc_trade_volume_24h).toFixed(3)).toLocaleString('ko-KR'); //거래량
 
@@ -343,7 +343,7 @@ export default {
               this.selectedCoinData.signed_change_price = data[j].signed_change_price;
               this.selectedCoinData.high_price = data[j].high_price;
               this.selectedCoinData.low_price = data[j].low_price;
-              this.selectedCoinData.acc_trade_price_24h = selectedCoinAccTragePrice24h;
+              this.selectedCoinData.acc_trade_price_24h = selectedCoinAccTradePrice24h;
               this.selectedCoinData.acc_trade_volume_24h = data[j].acc_trade_volume_24h;
 
               //현재 선택된 코인 증감률에따라 색상 변경
@@ -400,9 +400,16 @@ export default {
 
     coinItem_onclick : function(coin){
 
+      this.selectedCoinData = coin;
       eventBus.$emit("clickCoinList", coin);
     },
 
+    isSelectedCoin(market){
+      if(market === this.selectedCoinData.market){
+          return true;
+      }
+      return false;
+    },
   },  //method
 };
 

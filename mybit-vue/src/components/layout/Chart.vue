@@ -346,7 +346,7 @@ export default {
      */
     retrieve_candles_init : function(){
 
-      var baseUrl = 'http://localhost:8080/';
+      var baseUrl = 'http://localhost:8080/upbit/';
       var cnt = null;
       var today = new Date();
 
@@ -406,7 +406,7 @@ export default {
      */
     retrieve_current_candle : function(){
 
-      var baseUrl = 'http://localhost:8080/';
+      var baseUrl = 'http://localhost:8080/upbit/';
 
       if(this.unit === 'day' || this.unit === 'week' || this.unit === 'month'){
         baseUrl += (this.unit + 'Candles/');

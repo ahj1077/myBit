@@ -29,12 +29,11 @@ export default {
     },
     data: function(){return data},
     created: function() {
-
+      this.$parent.updateLoginInfo();
     },
     mounted : function() {
 
     },
-
     methods : {
 
     }

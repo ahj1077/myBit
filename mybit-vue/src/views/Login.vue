@@ -91,9 +91,9 @@ export default {
       axios.post(baseUrl, form, { withCredentials: true })
           .then((response) => {
             if(response.status == 200) {
-              console.log(response);
-              //const router = this.$router;
-              //router.push('/home'); //차트화면으로
+              //console.log(response);
+              const router = this.$router;
+              router.push('/home'); //차트화면으로
             }
           })
           .catch((error) => {

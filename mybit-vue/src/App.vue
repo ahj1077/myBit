@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header/>
+    <Header ref="header"/>
     <div id='content' class='content'>
      <!-- <router-link to='/'>Home</router-link>
       <router-link to='/about'> About</router-link>  -->
@@ -16,6 +16,11 @@ export default {
   name: 'App',
   components: {
     Header,
+  },
+  methods : {
+    updateLoginInfo : function(){
+        this.$refs.header.checkLoginUser();
+    },
   }
 }
 </script>
